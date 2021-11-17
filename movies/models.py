@@ -4,8 +4,10 @@ from django.conf import settings
 
 # Create your models here.
 class Movie(models.Model):
+    id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     overview = models.TextField()
+    # Todo : likeusers
     # genre_ids = models.CharField(max_length=50)
     # director = models.CharField(max_length=50)
     adult = models.BooleanField(default=False)
