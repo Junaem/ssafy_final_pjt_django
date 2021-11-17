@@ -20,5 +20,5 @@ from rest_framework import permissions
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('movies/', include('movies.urls')),
-    # path('reviews/', include('community.url')),
+    path('reviews/', include('community.urls')),
 ]
