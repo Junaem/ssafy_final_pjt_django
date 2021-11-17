@@ -25,9 +25,9 @@ def index(request):
     POST : 영화 추가
     '''
     if request.method == "GET":
-        def req_and_save(req_to):
+        def req_and_save(req_to, page_range):
             url = "https://api.themoviedb.org/3/movie/"+req_to
-            for page_num in range(1, 6):       # 1~10까지 페이지를 바꿔가며 요청
+            for page_num in range(1, page_range+1):       # 정해놓은 range까지 페이지를 바꿔가며 요청
                 params = {
                     "api_key" : secrets["API_KEY"], # secrets.json 파일에 숨겨둠
                     "language" : "ko-KR",
@@ -44,11 +44,13 @@ def index(request):
                         serializer = MovieSerializer(data=movie)
                     if serializer.is_valid():   
                         serializer.save()
-        req_and_save("popular")
-        req_and_save("top_rated")
+        req_and_save("popular", 5)
+        req_and_save("top_rated", 5)
+        req_and_save("upcoming", 2)
         movies = Movie.objects.order_by("-popularity")                      # DB에 저장된 모든 영화들 popularity 내림차순으로 반환
         list_serializer = MovieSerializer(movies, many=True)
         return Response(list_serializer.data, status=status.HTTP_200_OK)
+
     elif request.method == "POST":
         serializer = MovieSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
