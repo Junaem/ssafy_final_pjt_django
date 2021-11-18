@@ -11,7 +11,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "content",
                 )
 
-class CommentSerailizer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = (
@@ -19,4 +19,4 @@ class CommentSerailizer(serializers.ModelSerializer):
                     "user"
                     "review",
                     "content",
-                )
+               )
