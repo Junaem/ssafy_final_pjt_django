@@ -10,3 +10,13 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "title",
                     "content",
                 )
+
+class CommentSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = (
+                    "id",
+                    "user"
+                    "review",
+                    "content",
+                )
