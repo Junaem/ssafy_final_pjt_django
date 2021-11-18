@@ -6,8 +6,10 @@ from rest_framework.permissions import AllowAny
 
 from .models import Movie, Vote_rate
 from .serializers import MovieSerializer, Vote_rateSerializer
-
 import requests
+
+from community.models import Review
+from community.serializers import ReviewSerializer
 
 from server.settings import BASE_DIR
 import os, json
@@ -46,8 +48,9 @@ def index(request):
                         serializer = MovieSerializer(instance=old_movie, data=movie)
                     else:                                                       # 겹치지 않으면 새로운 serializer 사용
                         serializer = MovieSerializer(data=movie)
-                    if serializer.is_valid():   
-                        serializer.save()
+                    if serializer.is_valid():
+                        serializer.save(tmdb_vote_average=movie["vote_average"])
+                        # serializer.save()
         req_and_save("popular", 5)
         req_and_save("top_rated", 5)
         req_and_save("upcoming", 2)
@@ -71,7 +74,17 @@ def detail(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if request.method == "GET":
         serializer = MovieSerializer(movie)
-        return Response(serializer.data)
+        movie_json = serializer.data
+
+        review_list = []                                        # serizlizer를 뜯어서 리뷰들을 담은 리스트를 추가한 다음 Response로 보낼거임
+        for review_id in movie_json["review_set"]:
+            review=get_object_or_404(Review, id=review_id)
+            rev_ser = ReviewSerializer(review)
+            review_list.append(rev_ser.data)
+        
+        movie_json["reviews_data"] = review_list
+
+        return Response(movie_json)
     
     # elif request.method == "PUT":
     #     serializer = MovieSerializer(instance=movie, data=request.data)

@@ -15,3 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
             'followings',
             'followers',
             )
+        read_only_fields = (
+            'followings',
+            'followers',
+        )
