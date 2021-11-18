@@ -37,7 +37,9 @@ def index(request):
                     "page" : page_num
                 }
                 brought_movies = requests.get(url, params).json()["results"]    # 요청으로 받아온 영화들
-
+                # movies_serializer = MovieSerializer(data=brought_movies, many=True)   # 한번에 many=True로 지정해 넣을 경우 하나라도 id값이 겹치면 저장 불가..
+                # if movies_serializer.is_valid():
+                #     movies_serializer.save()
                 for movie in brought_movies:                                    # 각 영화를 id로 비교
                     if Movie.objects.filter(id=movie["id"]).exists():                    # 겹치면 update한 serializer 사용
                         old_movie = Movie.objects.get(id=movie["id"])
@@ -81,3 +83,12 @@ def detail(request, movie_pk):
         movie.delete()
         message = movie.title + "가 정상적으로 삭제됐습니다."
         return Response(data=message, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+def movie_like(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+    if not movie.like_users.filter(pk=user.pk).exists():
+        movie.like_users.add(user)
+    else :
+        movie.like_users.remove(user)

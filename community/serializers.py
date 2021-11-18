@@ -11,6 +11,7 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "title",
                     "content",
                 )
+        read_only_fields = ('id',)
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +22,4 @@ class CommentSerializer(serializers.ModelSerializer):
                     "review",
                     "content",
                )
+        read_only_fields = ('id',)

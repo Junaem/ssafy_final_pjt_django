@@ -56,6 +56,17 @@ def review_detail(request, review_pk):
             review_serializer = ReviewSerializer(instance=review)
             return Response(review_serializer.data, status=status.HTTP_201_CREATED)
 
+@api_view(["POST"])
+def review_like(request, review_pk):
+    review = get_object_or_404(Review, pk=review_pk)
+    user = request.user
+
+    if not review.like_users.filter(pk=user.pk).exists():
+        review.like_users.add(user)
+    else :
+        review.like_users.remove(user)
+
+
 @api_view(["PUT", "DELETE"])    # get 필요한가?
 def comment(request, review_pk, comment_pk):
     review = get_object_or_404(Review, pk=review_pk)
