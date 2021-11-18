@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Review, Comment
-from rest_framework.fields import CurrentUserDefault
+# from rest_framework.fields import CurrentUserDefault
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,8 +11,10 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "movie",
                     "title",
                     "content",
+                    "like_users",
+                    "comment_set"
                 )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user', 'like_users', 'comment_set')
 
     # def save(self):
     #     user = CurrentUserDefault() 
@@ -26,11 +28,11 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = (
                     "id",
-                    # "user",
+                    "user",
                     "review",
                     "content",
                )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user', 'review')
 
     # def save(self):
     #     user = CurrentUserDefault() 

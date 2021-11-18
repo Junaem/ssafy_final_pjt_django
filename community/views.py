@@ -19,8 +19,7 @@ def index(request):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
     elif request.method == "POST":
-        s_data = request.data
-        serializer = ReviewSerializer(data=request.data,)
+        serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -34,9 +33,20 @@ def review_detail(request, review_pk):
     DELETE : 리뷰 지우기
     '''
     review = get_object_or_404(Review, id=review_pk)
-    if request.method == "GET":
+
+    if request.method == "POST":
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user, review_id=review_pk)
+            review_serializer = ReviewSerializer(instance=review)
+            return Response(review_serializer.data, status=status.HTTP_201_CREATED)
+
+    elif request.method == "GET":
         serializer = ReviewSerializer(review)
         return Response(serializer.data)
+
+    elif request.user.id != review.user_id:
+        return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
     elif request.method == "PUT":
         serializer = ReviewSerializer(instance=review, data=request.data)
@@ -50,12 +60,7 @@ def review_detail(request, review_pk):
         message = + title + "가 정상적으로 삭제되었습니다."
         return Response(data=message, status=status.HTTP_204_NO_CONTENT)
 
-    elif request.method == "POST":
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
-            review_serializer = ReviewSerializer(instance=review)
-            return Response(review_serializer.data, status=status.HTTP_201_CREATED)
+    
 
 @api_view(["POST"])
 def review_like(request, review_pk):
@@ -66,6 +71,8 @@ def review_like(request, review_pk):
         review.like_users.add(user)
     else :
         review.like_users.remove(user)
+    serializer = ReviewSerializer(review)
+    return Response(serializer.data)
 
 
 @api_view(["PUT", "DELETE"])    # get 필요한가?
@@ -73,10 +80,13 @@ def comment(request, review_pk, comment_pk):
     review = get_object_or_404(Review, pk=review_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
 
+    if request.user.id != comment.user_id:
+        return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
+
     if request.method == "PUT":
         serializer = CommentSerializer(instance=comment, data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user, review_id=review_pk)
             review_serializer = ReviewSerializer(instance=review)
             return Response(review_serializer.data)
     

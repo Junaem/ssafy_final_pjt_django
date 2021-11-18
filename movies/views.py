@@ -61,7 +61,7 @@ def index(request):
     #         serializer.save()
     #         return Response(serializer.data)
     
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET'])
 def detail(request, movie_pk):
     '''
     GET : 영화 디테일 보여주기
@@ -73,16 +73,16 @@ def detail(request, movie_pk):
         serializer = MovieSerializer(movie)
         return Response(serializer.data)
     
-    elif request.method == "PUT":
-        serializer = MovieSerializer(instance=movie, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-    elif request.method == "DELETE":
-        title = movie.title
-        movie.delete()
-        message = movie.title + "가 정상적으로 삭제됐습니다."
-        return Response(data=message, status=status.HTTP_204_NO_CONTENT)
+    # elif request.method == "PUT":
+    #     serializer = MovieSerializer(instance=movie, data=request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.save()
+    #         return Response(serializer.data)
+    # elif request.method == "DELETE":
+    #     title = movie.title
+    #     movie.delete()
+    #     message = movie.title + "가 정상적으로 삭제됐습니다."
+    #     return Response(data=message, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def movie_like(request, movie_pk):
@@ -90,6 +90,8 @@ def movie_like(request, movie_pk):
     if not movie.like_users.filter(pk=request.user.id).exists():
         serializer = Vote_rateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user, movie=movie)
     else :
-        movie.like_users.filter(user_id=request.user.id)
+        movie.like_users.remove(request.user)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
