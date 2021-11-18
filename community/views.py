@@ -22,7 +22,7 @@ def index(request):
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET", "POST", "PUT", "DELETE"])
 def review_detail(request, review_pk):

@@ -39,7 +39,7 @@ def index(request):
                 brought_movies = requests.get(url, params).json()["results"]    # 요청으로 받아온 영화들
 
                 for movie in brought_movies:                                    # 각 영화를 id로 비교
-                    if Movie.objects.filter(id=movie["id"]):                    # 겹치면 update한 serializer 사용
+                    if Movie.objects.filter(id=movie["id"]).exists():                    # 겹치면 update한 serializer 사용
                         old_movie = Movie.objects.get(id=movie["id"])
                         serializer = MovieSerializer(instance=old_movie, data=movie)
                     else:                                                       # 겹치지 않으면 새로운 serializer 사용
