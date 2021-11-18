@@ -1,14 +1,15 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
-from server.settings import BASE_DIR
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 from .models import Movie
 from .serializers import MovieSerializer
 
 import requests
+
+from server.settings import BASE_DIR
 import os, json
 
 
@@ -18,7 +19,8 @@ secrets = json.loads(open(SECRET_PATH).read())
 
 
 # Create your views here.
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def index(request):
     '''
     GET : 현재 상영 영화 리스트 가져와 DB에 저장 후 전체 리스트 반환
@@ -51,11 +53,11 @@ def index(request):
         list_serializer = MovieSerializer(movies, many=True)
         return Response(list_serializer.data, status=status.HTTP_200_OK)
 
-    elif request.method == "POST":
-        serializer = MovieSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+    # elif request.method == "POST":
+    #     serializer = MovieSerializer(data=request.data)
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.save()
+    #         return Response(serializer.data)
     
 @api_view(['GET', 'PUT', 'DELETE'])
 def detail(request, movie_pk):
