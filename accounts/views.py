@@ -30,8 +30,8 @@ def signup(request):
 def follow(request, personname):
     me = request.user
     you = get_object_or_404(User, username=personname)
-
-    if not me.followings.filter(username=personname).exist():
-        me.followings.add(you)
-    else:
-        me.followings.remove(you)
+    if me != you:
+        if not me.followings.filter(username=personname).exist():
+            me.followings.add(you)
+        else:
+            me.followings.remove(you)
