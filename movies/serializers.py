@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Movie
+from .models import Movie, Vote_rate
+from rest_framework.fields import CurrentUserDefault
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,4 +16,18 @@ class MovieSerializer(serializers.ModelSerializer):
                     "popularity",
                     "release_date",
                     "poster_path",
+                    "like_users"
                 )
+        read_only_fields = ('like_users',)
+
+class Vote_rateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote_rate
+        fields = '__all__'
+
+        read_only_fields = ('user_id',)
+    
+    def save(self):
+        user = CurrentUserDefault()         # 유저 가져오기!!
+        movie = self.validated_data['movie']
+        rate = self.validated_data['rate']

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from .models import Movie
-from .serializers import MovieSerializer
+from .models import Movie, Vote_rate
+from .serializers import MovieSerializer, Vote_rateSerializer
 
 import requests
 
@@ -87,8 +87,9 @@ def detail(request, movie_pk):
 @api_view(['POST'])
 def movie_like(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
-    user = request.user
-    if not movie.like_users.filter(pk=user.pk).exists():
-        movie.like_users.add(user)
+    if not movie.like_users.filter(pk=request.user.id).exists():
+        serializer = Vote_rateSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
     else :
-        movie.like_users.remove(user)
+        movie.like_users.filter(user_id=request.user.id)

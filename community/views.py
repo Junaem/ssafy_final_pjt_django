@@ -19,9 +19,10 @@ def index(request):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
     elif request.method == "POST":
-        serializer = ReviewSerializer(data=request.data)
+        s_data = request.data
+        serializer = ReviewSerializer(data=request.data,)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(["GET", "POST", "PUT", "DELETE"])
@@ -40,7 +41,7 @@ def review_detail(request, review_pk):
     elif request.method == "PUT":
         serializer = ReviewSerializer(instance=review, data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data)
 
     elif request.method == "DELETE":
@@ -52,7 +53,7 @@ def review_detail(request, review_pk):
     elif request.method == "POST":
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user)
             review_serializer = ReviewSerializer(instance=review)
             return Response(review_serializer.data, status=status.HTTP_201_CREATED)
 
