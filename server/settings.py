@@ -12,15 +12,20 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+import os, json # SECRET_KEY 숨기기
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# sercrets.json 가져오기
+SECRET_PATH = os.path.join(BASE_DIR, 'secrets.json')
+secrets = json.loads(open(SECRET_PATH).read())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1rkmx^o_bze(=b)!udewg-6al+ld9czsr2g*97i%!+6&!wng+@'
+SECRET_KEY = secrets["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -144,6 +149,11 @@ REST_FRAMEWORK = {
     ),
 }
 
+import datetime
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+}
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
