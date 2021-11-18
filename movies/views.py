@@ -49,7 +49,7 @@ def index(request):
                     else:                                                       # 겹치지 않으면 새로운 serializer 사용
                         serializer = MovieSerializer(data=movie)
                     if serializer.is_valid():
-                        serializer.save(tmdb_vote_average=movie["vote_average"])  # tmdb의 vote_average는 이름 그대로 사용하는게 실행 속도 상 좋을 듯 
+                        serializer.save(tmdb_vote_average=movie["vote_average"])
                         # serializer.save()
         req_and_save("popular", 5)
         req_and_save("top_rated", 5)
