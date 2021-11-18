@@ -90,6 +90,8 @@ def movie_like(request, movie_pk):
     if not movie.like_users.filter(pk=request.user.id).exists():
         serializer = Vote_rateSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            serializer.save(user=request.user, movie=movie)
     else :
-        movie.like_users.filter(user_id=request.user.id)
+        movie.like_users.remove(request.user)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)

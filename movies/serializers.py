@@ -6,28 +6,32 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = (  
-                    "id",
-                    "title",
-                    "overview",
-                    # genre_ids,
-                    # director,
-                    "adult",
-                    "vote_average",
-                    "popularity",
-                    "release_date",
-                    "poster_path",
-                    "like_users"
-                )
+            "id",
+            "title",
+            "overview",
+            # genre_ids,
+            # director,
+            "adult",
+            "vote_average",
+            "popularity",
+            "release_date",
+            "poster_path",
+            "like_users"
+        )
         read_only_fields = ('like_users',)
 
 class Vote_rateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote_rate
-        fields = '__all__'
+        fields = (
+            "user_id",
+            "movie_id",
+            "rate"
+        )
 
         read_only_fields = ('user_id',)
     
-    def save(self):
-        user = CurrentUserDefault()         # 유저 가져오기!!
-        movie = self.validated_data['movie']
-        rate = self.validated_data['rate']
+    # def save(self):
+    #     user = CurrentUserDefault()         # 유저 가져오기!!
+    #     movie = self.validated_data['movie']
+    #     rate = self.validated_data['rate']

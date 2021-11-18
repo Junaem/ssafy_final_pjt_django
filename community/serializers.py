@@ -11,8 +11,9 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "movie",
                     "title",
                     "content",
+                    "like_users"
                 )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user', 'like_users')
 
     # def save(self):
     #     user = CurrentUserDefault() 
@@ -26,11 +27,11 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = (
                     "id",
-                    # "user",
+                    "user",
                     "review",
                     "content",
                )
-        read_only_fields = ('id',)
+        read_only_fields = ('id', 'user')
 
     # def save(self):
     #     user = CurrentUserDefault() 

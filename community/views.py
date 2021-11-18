@@ -19,8 +19,7 @@ def index(request):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
     elif request.method == "POST":
-        s_data = request.data
-        serializer = ReviewSerializer(data=request.data,)
+        serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -66,6 +65,8 @@ def review_like(request, review_pk):
         review.like_users.add(user)
     else :
         review.like_users.remove(user)
+    serializer = ReviewSerializer(review)
+    return Response(serializer.data)
 
 
 @api_view(["PUT", "DELETE"])    # get 필요한가?
