@@ -43,7 +43,17 @@ def review_detail(request, review_pk):
 
     elif request.method == "GET":
         serializer = ReviewSerializer(review)
-        return Response(serializer.data)
+        review_json = serializer.data
+
+        comment_list = []                                        # serizlizer를 뜯어서 리뷰json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
+        for comment_id in review_json["comment_set"]:
+            comment=get_object_or_404(Comment, id=comment_id)
+            com_ser = CommentSerializer(comment)
+            comment_list.append(com_ser.data)
+        
+        review_json["comments_data"] = comment_list
+
+        return Response(review_json)
 
     elif request.user.id != review.user_id:
         return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
