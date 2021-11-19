@@ -37,7 +37,7 @@ def follow(request, personname):
     me = request.user
     you = get_object_or_404(User, username=personname)
     if me != you:
-        if not me.followings.filter(username=personname).exist():
+        if not me.followings.filter(username=personname).exists():
             me.followings.add(you)
         else:
             me.followings.remove(you)
