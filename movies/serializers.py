@@ -15,11 +15,11 @@ class MovieSerializer(serializers.ModelSerializer):
             "popularity",
             "release_date",
             "poster_path",
+            "runtime",
 
             "tmdb_vote_average",
             "like_users",
             "review_set",
-            "runtime",
         )
         read_only_fields = ('like_users', 'tmdb_vote_average', 'review_set')
 
