@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from .models import Movie, Vote_rate
-from .serializers import MovieSerializer, Vote_rateSerializer
+from .models import Movie, Vote_rate, Genre
+from .serializers import MovieSerializer, Vote_rateSerializer, GenreSerializer
 import requests
 
 from community.models import Review
@@ -43,17 +43,37 @@ def index(request):
                 # if movies_serializer.is_valid():
                 #     movies_serializer.save()
                 for movie in brought_movies:                                    # 각 영화를 id로 비교
+                    
                     if Movie.objects.filter(id=movie["id"]).exists():                    # 겹치면 update한 serializer 사용
                         old_movie = Movie.objects.get(id=movie["id"])
                         serializer = MovieSerializer(instance=old_movie, data=movie)
                     else:                                                       # 겹치지 않으면 새로운 serializer 사용
                         serializer = MovieSerializer(data=movie)
+                        
                     if serializer.is_valid():
-                        serializer.save(tmdb_vote_average=movie["vote_average"])
-                        # serializer.save()
-        req_and_save("popular", 5)
+                        saved_movie = serializer.save(tmdb_vote_average=movie["vote_average"])
+                        genre_ids = movie["genre_ids"]
+                        for genre_id in genre_ids:
+                            genre = get_object_or_404(Genre, id=genre_id)
+                            if not genre.movie.filter(id=saved_movie.id).exists():
+                                genre.movie.add(saved_movie)
+
+        def req_genre():
+            url = "https://api.themoviedb.org/3/genre/movie/list"
+            params = {
+                "api_key" : secrets["API_KEY"],
+                "language" : "ko-KR",
+            }
+            genres = requests.get(url, params).json()["genres"]
+            for genre in genres:
+                serializer = GenreSerializer(data=genre)
+                if serializer.is_valid():
+                    serializer.save()
+
+        req_genre()
+        req_and_save("popular", 3)
         req_and_save("top_rated", 5)
-        req_and_save("upcoming", 2)
+        req_and_save("upcoming", 1)
         movies = Movie.objects.order_by("-popularity")                      # DB에 저장된 모든 영화들 popularity 내림차순으로 반환
         list_serializer = MovieSerializer(movies, many=True)
         return Response(list_serializer.data, status=status.HTTP_200_OK)
