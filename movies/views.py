@@ -76,7 +76,7 @@ def detail(request, movie_pk):
         serializer = MovieSerializer(movie)
         movie_json = serializer.data
 
-        review_list = []                                        # serizlizer를 뜯어서 리뷰들을 담은 리스트를 추가한 다음 Response로 보낼거임
+        review_list = []                                        # serizlizer를 뜯어서 리뷰들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         for review_id in movie_json["review_set"]:
             review=get_object_or_404(Review, id=review_id)
             rev_ser = ReviewSerializer(review)

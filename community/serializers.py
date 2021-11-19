@@ -12,9 +12,11 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "title",
                     "content",
                     "like_users",
-                    "comment_set"
+                    "comment_set",
+                    "created_at",
+                    "updated_at"
                 )
-        read_only_fields = ('id', 'user', 'like_users', 'comment_set')
+        read_only_fields = ('id', 'user', 'like_users', 'comment_set', 'created_at', 'updated_at')
 
     # def save(self):
     #     user = CurrentUserDefault() 
@@ -31,8 +33,10 @@ class CommentSerializer(serializers.ModelSerializer):
                     "user",
                     "review",
                     "content",
+                    "created_at",
+                    "updated_at"
                )
-        read_only_fields = ('id', 'user', 'review')
+        read_only_fields = ('id', 'user', 'review', 'created_at', 'updated_at')
 
     # def save(self):
     #     user = CurrentUserDefault() 

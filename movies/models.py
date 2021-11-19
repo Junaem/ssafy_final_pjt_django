@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.db.models.deletion import CASCADE
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.fields import NullBooleanField
 from rest_framework import validators
 
 User = settings.AUTH_USER_MODEL
@@ -18,6 +19,7 @@ class Movie(models.Model):
     popularity = models.FloatField()
     release_date = models.DateField()
     poster_path = models.CharField(max_length=200)
+    # runtime_minute = models.IntegerField()
 
     like_users = models.ManyToManyField(User, through='Vote_rate', related_name='like_movies')
 

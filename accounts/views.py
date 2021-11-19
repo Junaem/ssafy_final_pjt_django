@@ -18,7 +18,7 @@ def signup(request):
     password_confirmation = request.data.get('password_confirmation')
     if password !=password_confirmation:
         return Response({'password': ['비밀번호 확인이 일치하지 않습니다.']}, HTTP_400_BAD_REQUEST)
-
+ 
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user = serializer.save()
@@ -37,7 +37,7 @@ def follow(request, personname):
     me = request.user
     you = get_object_or_404(User, username=personname)
     if me != you:
-        if not me.followings.filter(username=personname).exists():
+        if not me.followings.filter(username=personname).exist():
             me.followings.add(you)
         else:
             me.followings.remove(you)

@@ -17,9 +17,10 @@ class MovieSerializer(serializers.ModelSerializer):
             "release_date",
             "poster_path",
             "like_users",
-            "review_set"
+            "review_set",
+            # "runtime",
         )
-        read_only_fields = ('like_users', 'tmdb_vote_average', 'review_set')
+        read_only_fields = ('like_users', 'tmdb_vote_average', 'review_set', 'runtime')
 
 class Vote_rateSerializer(serializers.ModelSerializer):
     class Meta:
