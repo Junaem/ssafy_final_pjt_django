@@ -128,12 +128,12 @@ def detail(request, movie_pk):
 
 @api_view(['POST'])
 def movie_like(request):
-    movie_pk = request.data.get('movie_pk')
-    movie = get_object_or_404(Movie, pk=movie_pk)
+    movie_id = request.data.get('movie_id')
+    movie = get_object_or_404(Movie, pk=movie_id)
     if not movie.like_users.filter(pk=request.user.id).exists():
         serializer = Vote_rateSerializer(data=request.data)
     else :
-        vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_pk)
+        vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
         serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
 
 
