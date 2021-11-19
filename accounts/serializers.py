@@ -10,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'username', 
             'password', 
+            
             'like_movies', 
             'like_reviews',
             'followings',
