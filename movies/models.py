@@ -1,3 +1,4 @@
+from functools import partial
 from operator import mod
 from django.db import models
 from django.conf import settings
@@ -7,6 +8,11 @@ from django.db.models.fields import NullBooleanField
 from rest_framework import validators
 
 User = settings.AUTH_USER_MODEL
+
+# class Genre(models.Model):
+#     id = models.IntegerField(primary_key=True)
+#     name = models.CharField(max_length=50)
+
 
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -18,8 +24,9 @@ class Movie(models.Model):
     tmdb_vote_average = models.FloatField()
     popularity = models.FloatField()
     release_date = models.DateField()
-    poster_path = models.CharField(max_length=200)
+    poster_path = models.CharField(max_length=100)
     runtime = models.IntegerField(null=True)
+    # genre = models.ManyToManyField(Genre, related_name='movie')
 
     like_users = models.ManyToManyField(User, through='Vote_rate', related_name='like_movies')
 
