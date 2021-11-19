@@ -9,9 +9,9 @@ from rest_framework import validators
 
 User = settings.AUTH_USER_MODEL
 
-# class Genre(models.Model):
-#     id = models.IntegerField(primary_key=True)
-#     name = models.CharField(max_length=50)
+class Genre(models.Model):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
 
 
 class Movie(models.Model):
@@ -26,7 +26,7 @@ class Movie(models.Model):
     release_date = models.DateField()
     poster_path = models.CharField(max_length=100)
     runtime = models.IntegerField(null=True)
-    # genre = models.ManyToManyField(Genre, related_name='movie')
+    genre = models.ManyToManyField(Genre, related_name='movie')
 
     like_users = models.ManyToManyField(User, through='Vote_rate', related_name='like_movies')
 
