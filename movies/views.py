@@ -131,9 +131,13 @@ def movie_like(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if not movie.like_users.filter(pk=request.user.id).exists():
         serializer = Vote_rateSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, movie=movie)
     else :
-        movie.like_users.remove(request.user)
+        vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_pk)
+        serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
+
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user, movie=movie)
+
     serializer = MovieSerializer(movie)
     return Response(serializer.data)
