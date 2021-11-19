@@ -52,7 +52,7 @@ def index(request):
                         
                     if serializer.is_valid():
                         saved_movie = serializer.save(tmdb_vote_average=movie["vote_average"])
-                        genre_ids = movie["genre_ids"]
+                        genre_ids = movie["genre_ids"]                          # 장르 데이터 가져와서 m:n 관계 형성
                         for genre_id in genre_ids:
                             genre = get_object_or_404(Genre, id=genre_id)
                             if not genre.movie.filter(id=saved_movie.id).exists():

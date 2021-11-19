@@ -34,7 +34,7 @@ class Vote_rateSerializer(serializers.ModelSerializer):
             "user_id",
         )
 
-        read_only_fields = ('user_id',)
+        read_only_fields = ('user_id', 'movie_id')
     
     # def save(self):
     #     user = CurrentUserDefault()         # 유저 가져오기!!
