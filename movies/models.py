@@ -19,7 +19,7 @@ class Movie(models.Model):
     popularity = models.FloatField()
     release_date = models.DateField()
     poster_path = models.CharField(max_length=200)
-    # runtime_minute = models.IntegerField()
+    runtime = models.IntegerField(null=True)
 
     like_users = models.ManyToManyField(User, through='Vote_rate', related_name='like_movies')
 

@@ -73,10 +73,19 @@ def detail(request, movie_pk):
     '''
     movie = get_object_or_404(Movie, pk=movie_pk)
     if request.method == "GET":
-        serializer = MovieSerializer(movie)
+
+        url = "https://api.themoviedb.org/3/movie/"+str(movie_pk)
+        params = {
+            "api_key" : secrets["API_KEY"],
+            "language" : "ko-KR"
+            }
+        new_movie = requests.get(url, params).json()
+        serializer = MovieSerializer(instance=movie, data=new_movie)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
         movie_json = serializer.data
 
-        review_list = []                                        # serizlizer를 뜯어서 리뷰들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
+        review_list = []                                        # serizlizer를 뜯어서 리뷰json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         for review_id in movie_json["review_set"]:
             review=get_object_or_404(Review, id=review_id)
             rev_ser = ReviewSerializer(review)
