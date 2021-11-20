@@ -78,7 +78,7 @@ def review_detail(request, review_pk):
     elif request.method == "DELETE":
         title = review.title
         review.delete()
-        message = + title + "가 정상적으로 삭제되었습니다."
+        message = title + "가 정상적으로 삭제되었습니다."
         return Response(data=message, status=status.HTTP_204_NO_CONTENT)
 
     

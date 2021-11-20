@@ -126,21 +126,26 @@ def detail(request, movie_pk):
     #     message = movie.title + "가 정상적으로 삭제됐습니다."
     #     return Response(data=message, status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def movie_like(request):
     movie_id = request.data.get('movie_id')
     movie = get_object_or_404(Movie, pk=movie_id)
-    if not movie.like_users.filter(pk=request.user.id).exists():
-        serializer = Vote_rateSerializer(data=request.data)
-    else :
-        vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
-        serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
+
+    if request.method == 'POST':
+        if not movie.like_users.filter(pk=request.user.id).exists():
+            serializer = Vote_rateSerializer(data=request.data)
+        else :
+            vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
+            serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
 
 
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user, movie=movie)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user, movie=movie)
 
-    serializer = MovieSerializer(movie)
-    return Response(serializer.data)
-
-# def 
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
+    elif request.method == 'GET':
+        vote_rate = Vote_rate.objects.filter(user_id=request.user.id).get(movie_id=movie_id)
+        print(vote_rate)
+        serializer = Vote_rateSerializer(vote_rate)
+        return Response(serializer.data)
