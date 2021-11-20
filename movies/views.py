@@ -138,7 +138,6 @@ def movie_like(request):
             vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
             serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
 
-
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, movie=movie)
 
