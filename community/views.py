@@ -18,6 +18,7 @@ def index(request):
         reviews = get_list_or_404(Review)
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+
     elif request.method == "POST":
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
