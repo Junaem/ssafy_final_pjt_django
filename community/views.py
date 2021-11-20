@@ -61,7 +61,7 @@ def review_detail(request, review_pk):
         serializer = ReviewSerializer(review)
         review_json = serializer.data
         user_id = review_json.get('user')
-        
+
         username = get_object_or_404(User, id=user_id).username
         review_json["username"] = username
 
@@ -79,7 +79,6 @@ def review_detail(request, review_pk):
             comment_list.append(com_json)
         
         review_json["comments_data"] = comment_list
-        print(review_json)
         return Response(review_json)
 
     elif request.user.id != review.user_id:
