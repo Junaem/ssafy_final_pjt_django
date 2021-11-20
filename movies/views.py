@@ -113,6 +113,14 @@ def detail(request, movie_pk):
         
         movie_json["reviews_data"] = review_list
 
+        genre_names = []
+        for genre_id in movie_json["genre"]:
+            genre = get_object_or_404(Genre, id=genre_id)
+            gen_ser = GenreSerializer(genre)
+            genre_names.append(gen_ser.data)
+        # movie_json["genre_names"] = genre_names
+        movie_json["genre"] = genre_names
+
         return Response(movie_json)
     
     # elif request.method == "PUT":
