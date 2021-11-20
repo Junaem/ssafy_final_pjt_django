@@ -10,6 +10,7 @@ import requests
 
 from community.models import Review
 from community.serializers import ReviewSerializer
+from django.contrib.auth import get_user_model
 
 from server.settings import BASE_DIR
 import os, json
@@ -19,6 +20,7 @@ import os, json
 SECRET_PATH = os.path.join(BASE_DIR, 'secrets.json')
 secrets = json.loads(open(SECRET_PATH).read())
 
+User = get_user_model()
 
 # Create your views here.
 @api_view(['GET'])
@@ -109,7 +111,12 @@ def detail(request, movie_pk):
         for review_id in movie_json["review_set"]:
             review=get_object_or_404(Review, id=review_id)
             rev_ser = ReviewSerializer(review)
-            review_list.append(rev_ser.data)
+            rev_json = rev_ser.data
+
+            username = get_object_or_404(User, id=review.user_id).username
+            rev_json["username"] = username
+
+            review_list.append(rev_json)
         
         movie_json["reviews_data"] = review_list
 
@@ -120,7 +127,7 @@ def detail(request, movie_pk):
             genre_names.append(gen_ser.data)
         # movie_json["genre_names"] = genre_names
         movie_json["genre"] = genre_names
-
+        print(movie_json)
         return Response(movie_json)
     
     # elif request.method == "PUT":
