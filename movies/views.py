@@ -146,6 +146,5 @@ def movie_like(request):
         return Response(serializer.data)
     elif request.method == 'GET':
         vote_rate = Vote_rate.objects.filter(user_id=request.user.id).get(movie_id=movie_id)
-        print(vote_rate)
         serializer = Vote_rateSerializer(vote_rate)
         return Response(serializer.data)
