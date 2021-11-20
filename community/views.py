@@ -7,6 +7,11 @@ from .models import Comment, Review
 from .serializers import CommentSerializer, ReviewSerializer
 from django.views.decorators.csrf import csrf_exempt
 
+from movies.models import Movie
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 # Create your views here.
 @api_view(["GET", "POST"])
 def index(request):
@@ -16,8 +21,18 @@ def index(request):
     '''
     if request.method == "GET":
         reviews = get_list_or_404(Review)
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+        reviews_json = []
+        for review in reviews:
+            serializer = ReviewSerializer(review)
+            rev_ser = serializer.data
+
+            movie_title = get_object_or_404(Movie, id=review.movie_id).title
+            rev_ser["movie_title"] = movie_title
+
+            username = get_object_or_404(User, id=review.user_id).username
+            rev_ser["username"] = username
+            reviews_json.append(rev_ser)
+        return Response(reviews_json)
 
     elif request.method == "POST":
         serializer = ReviewSerializer(data=request.data)
@@ -45,15 +60,26 @@ def review_detail(request, review_pk):
     elif request.method == "GET":
         serializer = ReviewSerializer(review)
         review_json = serializer.data
+        user_id = review_json.get('user')
+        
+        username = get_object_or_404(User, id=user_id).username
+        review_json["username"] = username
+
+        movie_title = get_object_or_404(Movie, id=review.movie_id).title
+        review_json["movie_title"] = movie_title
 
         comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         for comment_id in review_json["comment_set"]:
             comment=get_object_or_404(Comment, id=comment_id)
             com_ser = CommentSerializer(comment)
-            comment_list.append(com_ser.data)
+            com_json = com_ser.data
+            
+            comment_username = get_object_or_404(User, id=comment.user_id).username
+            com_json["username"] = comment_username
+            comment_list.append(com_json)
         
         review_json["comments_data"] = comment_list
-
+        print(review_json)
         return Response(review_json)
 
     elif request.user.id != review.user_id:
