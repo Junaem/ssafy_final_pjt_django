@@ -98,8 +98,6 @@ def review_like(request, review_pk):
 def comment(request, review_pk, comment_pk):
     review = get_object_or_404(Review, pk=review_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
-    print(request.user.id)
-    print(comment.user_id)
     if request.user.id != comment.user_id:
         return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 

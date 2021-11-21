@@ -90,8 +90,8 @@ def index(request):
 def detail(request, movie_pk):
     '''
     GET : 영화 디테일 보여주기
-    PUT : 영화 수정
-    DELETE : 영화 삭제
+    PUT(기능x) : 영화 수정
+    DELETE(기능x) : 영화 삭제
     '''
     movie = get_object_or_404(Movie, pk=movie_pk)
     if request.method == "GET":
@@ -105,29 +105,7 @@ def detail(request, movie_pk):
         serializer = MovieSerializer(instance=movie, data=new_movie)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-        movie_json = serializer.data
-
-        review_list = []                                        # MovieSerizlizer를 뜯어서 리뷰json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
-        for review_id in movie_json["review_set"]:
-            review=get_object_or_404(Review, id=review_id)
-            rev_ser = ReviewSerializer(review)
-            rev_json = rev_ser.data
-
-            username = get_object_or_404(User, id=review.user_id).username      # 리뷰 시리얼라이저마저 뜯어서 유저 이름을 같이 적어놓을 거임
-            rev_json["username"] = username     
-
-            review_list.append(rev_json)
-        
-        movie_json["reviews_data"] = review_list
-
-        genre_names = []                                        # 장르도 id가 아니라 name포함시켜서 응답
-        for genre_id in movie_json["genre"]:
-            genre = get_object_or_404(Genre, id=genre_id)
-            gen_ser = GenreSerializer(genre)
-            genre_names.append(gen_ser.data)
-        # movie_json["genre_names"] = genre_names
-        movie_json["genre"] = genre_names
-        return Response(movie_json)
+            return Response(serializer.data)
     
     # elif request.method == "PUT":
     #     serializer = MovieSerializer(instance=movie, data=request.data)
