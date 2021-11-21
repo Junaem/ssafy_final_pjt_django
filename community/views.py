@@ -22,7 +22,6 @@ def index(request):
     if request.method == "GET":
         reviews = get_list_or_404(Review)
         serializer = ReviewSerializer(reviews, many=True)
-        print(serializer.data)
         return Response(serializer.data)
 
     elif request.method == "POST":
@@ -45,25 +44,25 @@ def review_detail(request, review_pk):
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, review_id=review_pk)
-            review_serializer = ReviewSerializer(instance=review)
+            review_serializer = ReviewSerializer(review)
             return Response(review_serializer.data, status=status.HTTP_201_CREATED)
 
     elif request.method == "GET":
         serializer = ReviewSerializer(review)
-        review_json = serializer.data
 
-        comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
-        for comment_id in review_json["comment_set"]:
-            comment=get_object_or_404(Comment, id=comment_id)
-            com_ser = CommentSerializer(comment)
-            com_json = com_ser.data
+        # 직접 json에 추가하던 코드, seriailzerMethodField로 대체했으나 일단 주석으로 남겨둠
+        # comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
+        # for comment_id in review_json["comment_set"]:
+        #     comment=get_object_or_404(Comment, id=comment_id)
+        #     com_ser = CommentSerializer(comment)
+        #     com_json = com_ser.data
             
-            comment_username = get_object_or_404(User, id=comment.user_id).username
-            com_json["username"] = comment_username
-            comment_list.append(com_json)
+        #     comment_username = get_object_or_404(User, id=comment.user_id).username
+        #     com_json["username"] = comment_username
+        #     comment_list.append(com_json)
         
-        review_json["comments_data"] = comment_list
-        return Response(review_json)
+        # review_json["comments_data"] = comment_list
+        return Response(serializer.data)
 
     elif request.user.id != review.user_id:
         return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
@@ -72,18 +71,7 @@ def review_detail(request, review_pk):
         serializer = ReviewSerializer(instance=review, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
-            review_json = serializer.data
-
-            comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
-            for comment_id in review_json["comment_set"]:
-                comment=get_object_or_404(Comment, id=comment_id)
-                com_ser = CommentSerializer(comment)
-                comment_list.append(com_ser.data)
-            
-            review_json["comments_data"] = comment_list
-
-            return Response(review_json)
-            # return Response(serializer.data)
+            return Response(serializer.data)
 
     elif request.method == "DELETE":
         title = review.title
@@ -110,7 +98,8 @@ def review_like(request, review_pk):
 def comment(request, review_pk, comment_pk):
     review = get_object_or_404(Review, pk=review_pk)
     comment = get_object_or_404(Comment, pk=comment_pk)
-
+    print(request.user.id)
+    print(comment.user_id)
     if request.user.id != comment.user_id:
         return Response({"권한이 없습니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
