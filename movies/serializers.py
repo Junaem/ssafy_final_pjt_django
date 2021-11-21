@@ -2,17 +2,34 @@ from rest_framework import serializers
 from .models import Movie, Vote_rate, Genre
 from rest_framework.fields import CurrentUserDefault
 
+from community.models import Review
+from community.serializers import ReviewSerializer
+
 from django.db.models import Avg
 
 
 class MovieSerializer(serializers.ModelSerializer):
 
     our_rate = serializers.SerializerMethodField()
-
     def get_our_rate(self, obj):
         movie_id = obj.id
-        rates = Vote_rate.objects.filter(movie_id=movie_id).aggregate(Avg('rate'))
-        return rates
+        avg_rate = Vote_rate.objects.filter(movie_id=movie_id).aggregate(Avg('rate'))
+        return avg_rate
+
+    reviews_data = serializers.SerializerMethodField()
+    def get_reviews_data(self, obj):
+        movie_id = obj.id
+        reviews = Review.objects.filter(movie_id=movie_id)
+        serializer = ReviewSerializer(reviews, many=True)
+        return serializer.data
+
+    genre = serializers.SerializerMethodField()
+    def get_genre(self, obj):
+        movie_id = obj.id
+        genres = Genre.objects.filter(movie=movie_id)
+        serializer = GenreSerializer(genres, many=True)
+        return serializer.data
+
 
     class Meta:
         model = Movie
@@ -20,20 +37,20 @@ class MovieSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "overview",
-            # genre_ids,
-            # director,
+            
             "adult",
             "popularity",
             "release_date",
             "poster_path",
             "runtime",
-            "genre",
 
             "tmdb_vote_average",
             "like_users",
             "review_set",
 
-            'our_rate'
+            "our_rate",
+            "reviews_data",
+            "genre",            # 원래 있는 필드를 바꿀 수도 있나?
         )
         read_only_fields = ('like_users', 'tmdb_vote_average', 'review_set', 'genre')
 
