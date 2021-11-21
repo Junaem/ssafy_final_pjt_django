@@ -21,18 +21,9 @@ def index(request):
     '''
     if request.method == "GET":
         reviews = get_list_or_404(Review)
-        reviews_json = []
-        for review in reviews:
-            serializer = ReviewSerializer(review)
-            rev_ser = serializer.data
-
-            movie_title = get_object_or_404(Movie, id=review.movie_id).title
-            rev_ser["movie_title"] = movie_title
-
-            username = get_object_or_404(User, id=review.user_id).username
-            rev_ser["username"] = username
-            reviews_json.append(rev_ser)
-        return Response(reviews_json)
+        serializer = ReviewSerializer(reviews, many=True)
+        print(serializer.data)
+        return Response(serializer.data)
 
     elif request.method == "POST":
         serializer = ReviewSerializer(data=request.data)
@@ -60,13 +51,6 @@ def review_detail(request, review_pk):
     elif request.method == "GET":
         serializer = ReviewSerializer(review)
         review_json = serializer.data
-        user_id = review_json.get('user')
-
-        username = get_object_or_404(User, id=user_id).username
-        review_json["username"] = username
-
-        movie_title = get_object_or_404(Movie, id=review.movie_id).title
-        review_json["movie_title"] = movie_title
 
         comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         for comment_id in review_json["comment_set"]:

@@ -96,7 +96,7 @@ def detail(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     if request.method == "GET":
 
-        url = "https://api.themoviedb.org/3/movie/"+str(movie_pk)
+        url = "https://api.themoviedb.org/3/movie/"+str(movie_pk)           # runtime 받아오기
         params = {
             "api_key" : secrets["API_KEY"],
             "language" : "ko-KR"
@@ -107,27 +107,26 @@ def detail(request, movie_pk):
             serializer.save()
         movie_json = serializer.data
 
-        review_list = []                                        # serizlizer를 뜯어서 리뷰json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
+        review_list = []                                        # MovieSerizlizer를 뜯어서 리뷰json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         for review_id in movie_json["review_set"]:
             review=get_object_or_404(Review, id=review_id)
             rev_ser = ReviewSerializer(review)
             rev_json = rev_ser.data
 
-            username = get_object_or_404(User, id=review.user_id).username
-            rev_json["username"] = username
+            username = get_object_or_404(User, id=review.user_id).username      # 리뷰 시리얼라이저마저 뜯어서 유저 이름을 같이 적어놓을 거임
+            rev_json["username"] = username     
 
             review_list.append(rev_json)
         
         movie_json["reviews_data"] = review_list
 
-        genre_names = []
+        genre_names = []                                        # 장르도 id가 아니라 name포함시켜서 응답
         for genre_id in movie_json["genre"]:
             genre = get_object_or_404(Genre, id=genre_id)
             gen_ser = GenreSerializer(genre)
             genre_names.append(gen_ser.data)
         # movie_json["genre_names"] = genre_names
         movie_json["genre"] = genre_names
-        print(movie_json)
         return Response(movie_json)
     
     # elif request.method == "PUT":
@@ -143,6 +142,8 @@ def detail(request, movie_pk):
 
 @api_view(['GET'])
 def get_movie_like(request, movie_id):
+    if not Vote_rate.objects.filter(user_id=request.user.id, movie_id=movie_id).exists():       # 평점이 없을때 응답
+        return Response({}, status.HTTP_204_NO_CONTENT)
     vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
     serializer = Vote_rateSerializer(vote_rate)
     return Response(serializer.data)
@@ -162,4 +163,10 @@ def post_movie_like(request):
         serializer.save(user=request.user, movie=movie)
 
     serializer = MovieSerializer(movie)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def genre(request, genre_id):
+    movies = Movie.objects.filter(genre=genre_id).order_by('-popularity')
+    serializer = MovieSerializer(movies, many=True)
     return Response(serializer.data)
