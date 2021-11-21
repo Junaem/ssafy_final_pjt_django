@@ -15,11 +15,16 @@ class ReviewSerializer(serializers.ModelSerializer):
          
 
     username = serializers.SerializerMethodField()
-
     def get_username(self, obj):
         user_id = obj.user_id
         return User.objects.get(id=user_id).username
 
+    comments_data = serializers.SerializerMethodField()
+    def get_comments_data(self, obj):
+        review_id = obj.id
+        comments = Comment.objects.filter(review_id=review_id)
+        serializer = CommentSerializer(comments, many=True)
+        return serializer.data
 
     class Meta:
         model = Review
@@ -37,6 +42,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
                     "movie_title",
                     "username",
+                    "comments_data"
                 )
         read_only_fields = ('id', 'user', 'like_users', 'comment_set', 'created_at', 'updated_at')
 
@@ -48,6 +54,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    def get_username(self, obj):
+        user_id = obj.user_id
+        return User.objects.get(id=user_id).username
+
     class Meta:
         model = Comment
         fields = (
@@ -57,7 +68,9 @@ class CommentSerializer(serializers.ModelSerializer):
                     "user",
                     "review",
                     "created_at",
-                    "updated_at"
+                    "updated_at",
+
+                    "username"
                )
         read_only_fields = ('id', 'user', 'review', 'created_at', 'updated_at')
 
