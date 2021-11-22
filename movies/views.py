@@ -1,3 +1,4 @@
+from django.db.models.fields import NullBooleanField
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework import status
 from rest_framework.response import Response
@@ -130,11 +131,13 @@ def get_movie_like(request, movie_id):
 def post_movie_like(request):
     movie_id = request.data.get('movie_id')
     movie = get_object_or_404(Movie, id=movie_id)
-    
     if not movie.like_users.filter(pk=request.user.id).exists():
         serializer = Vote_rateSerializer(data=request.data)
     else :
         vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
+        if not request.data.get('rate'):
+            vote_rate.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = Vote_rateSerializer(instance=vote_rate, data=request.data)
 
     if serializer.is_valid(raise_exception=True):
