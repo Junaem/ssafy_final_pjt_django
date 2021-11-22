@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username', 
             'password', 
-            
+            'is_superuser'
             'like_movies', 
             'like_reviews',
             'followings',
@@ -28,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             'like_reviews',
             'followings',
             'followers',
+            'is_superuser'
         )
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -53,6 +54,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'followings',
             'followers',
 
+            'is_superuser',
+
             'reviews_data',
             'like_movies',
+        )
+        read_only_fields = (
+            'is_superuser',
         )
