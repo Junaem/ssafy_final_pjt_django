@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
+import movies
+
 from .models import Movie, Vote_rate, Genre
 from .serializers import MovieSerializer, Vote_rateSerializer, GenreSerializer
 import requests
@@ -151,4 +153,45 @@ def post_movie_like(request):
 def genre(request, genre_id):
     movies = Movie.objects.filter(genre=genre_id).order_by('-popularity')
     serializer = MovieSerializer(movies, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data[:20])
+
+@api_view(['GET'])
+def recommend_a(request):
+    votes = Vote_rate.objects.filter(user_id=request.user.id)
+    if votes.exists():
+        preference = {}
+        for vote in votes:
+            movie_id = vote.movie_id
+            rate = vote.rate
+            movies_genres = Genre.objects.filter(movie=movie_id)
+            for genre in movies_genres:
+                genre_id = genre.id
+                if preference.get(genre_id):
+                    preference[genre_id] += rate
+                else :
+                    preference[genre_id] = rate
+        rank = sorted(preference, key= lambda x: -preference[x])
+        preference["rank"] = rank
+        return Response(preference)
+    return Response({28:0, 35:0, 53:0, 16:0, 10749:0, "rank":[35, 53, 16, 10749, 28]})
+
+@api_view(['GET'])
+def classic(request):
+    movies = Movie.objects.order_by('-tmdb_vote_average')
+    serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data[:20])
+    
+
+@api_view(['GET'])
+def new_movies(request):
+    movies = Movie.objects.order_by('-release_date')
+    serializer = MovieSerializer(movies, many=True)
+    return Response(serializer.data[:20])
+
+
+@api_view(['GET'])
+def watched(request):
+    votes = Vote_rate.objects.filter(user_id=request.user.id)
+    print(votes)
+
+    Response({})
