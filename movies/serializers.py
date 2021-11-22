@@ -16,6 +16,13 @@ class MovieSerializer(serializers.ModelSerializer):
         avg_rate = Vote_rate.objects.filter(movie_id=movie_id).aggregate(Avg('rate'))
         return avg_rate
 
+    # total_rate = serializers.SerializerMethodField()
+    # def get_total_rate(self, obj):
+    #     movie_id = obj.id
+    #     vote_rate = Vote_rate.objects.filter(movie_id=movie_id)
+    #     vote_pnt = vote_rate.aggregate
+
+
     reviews_data = serializers.SerializerMethodField()
     def get_reviews_data(self, obj):
         movie_id = obj.id
@@ -45,6 +52,7 @@ class MovieSerializer(serializers.ModelSerializer):
             "runtime",
 
             "tmdb_vote_average",
+            "tmdb_vote_count",
             "like_users",
             "review_set",
 
@@ -52,7 +60,7 @@ class MovieSerializer(serializers.ModelSerializer):
             "reviews_data",
             "genre",            # 원래 있는 필드를 바꿀 수도 있나?
         )
-        read_only_fields = ('like_users', 'tmdb_vote_average', 'review_set', 'genre')
+        read_only_fields = ('like_users', 'tmdb_vote_average', 'tmdb_vote_count', 'review_set', 'genre')
 
 class Vote_rateSerializer(serializers.ModelSerializer):
     class Meta:
