@@ -5,7 +5,7 @@ from rest_framework.fields import CurrentUserDefault
 from community.models import Review
 from community.serializers import ReviewSerializer
 
-from django.db.models import Avg
+from django.db.models import Avg, fields
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class MovieSerializer(serializers.ModelSerializer):
     def get_our_rate(self, obj):
         movie_id = obj.id
         avg_rate = Vote_rate.objects.filter(movie_id=movie_id).aggregate(Avg('rate'))
-        return avg_rate
+        return avg_rate["rate__avg"]
 
     # total_rate = serializers.SerializerMethodField()
     # def get_total_rate(self, obj):
@@ -62,13 +62,37 @@ class MovieSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('like_users', 'tmdb_vote_average', 'tmdb_vote_count', 'review_set', 'genre')
 
+class MovieSimpleSerializer(MovieSerializer):
+    
+    class Meta:
+        model = Movie
+        fields = (
+            'id',
+            'title',
+            'release_date',
+            'poster_path',
+            'tmdb_vote_average',
+
+            'our_rate',
+            'reviews_data',
+            'genre',
+        )
+
+
 class Vote_rateSerializer(serializers.ModelSerializer):
+    movie_data = serializers.SerializerMethodField()
+    def get_movie_data(self, obj):
+        movie_id = obj.movie_id
+        movie = Movie.objects.get(id=movie_id)
+        return MovieSimpleSerializer(movie).data
+
     class Meta:
         model = Vote_rate
         fields = (
             "rate",
             "movie_id",
             "user_id",
+            "movie_data"
         )
 
         read_only_fields = ('user_id',)
