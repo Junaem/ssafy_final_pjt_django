@@ -44,10 +44,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         vote_rates = Vote_rate.objects.filter(user_id=user_id)
         return Vote_rateSerializer(vote_rates, many=True).data
 
-    # followings = serializers.SerializerMethodField()
-    # def get_followings(self, obj):
-    #     user_id = obj.id
-    #     followings = User.objects.filter(followers=)
 
     class Meta:
         model = User

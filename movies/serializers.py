@@ -5,7 +5,7 @@ from rest_framework.fields import CurrentUserDefault
 from community.models import Review
 from community.serializers import ReviewSerializer
 
-from django.db.models import Avg, fields
+from django.db.models import Avg
 
 
 class MovieSerializer(serializers.ModelSerializer):
