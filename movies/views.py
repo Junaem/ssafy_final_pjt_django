@@ -147,6 +147,7 @@ def post_movie_like(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def genre(request, genre_id):
     movies = Movie.objects.filter(genre=genre_id).order_by('-popularity')
     serializer = MovieSerializer(movies, many=True)
