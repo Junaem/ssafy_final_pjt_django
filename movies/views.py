@@ -81,7 +81,7 @@ def index(request):
         req_and_save("upcoming", 1)
         movies = Movie.objects.order_by("-popularity")                      # DB에 저장된 모든 영화들 popularity 내림차순으로 반환
         list_serializer = MovieSerializer(movies, many=True)
-        return Response(list_serializer.data, status=status.HTTP_200_OK)
+        return Response(list_serializer.data[:20], status=status.HTTP_200_OK)
 
     # elif request.method == "POST":
     #     serializer = MovieSerializer(data=request.data)
