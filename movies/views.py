@@ -191,7 +191,10 @@ def new_movies(request):
 
 @api_view(['GET'])
 def watched(request):
-    votes = Vote_rate.objects.filter(user_id=request.user.id)
-    print(votes)
+    votes = Vote_rate.objects.filter(user_id=request.user.id).filter(rate__gte=6)
+    watched_data=[]
+    for vote in votes:
+        movie = get_object_or_404(Movie, id=vote.movie_id)
+        watched_data.append(MovieSerializer(movie).data)
 
-    Response({})
+    return Response(watched_data)
