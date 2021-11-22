@@ -52,5 +52,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'followings',
             'followers',
 
-            'reviews_data'
+            'reviews_data',
+            'like_movies',
         )
