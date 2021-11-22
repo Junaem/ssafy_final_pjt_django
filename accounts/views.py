@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserProfileSerializer
 
 from django.contrib.auth import get_user_model
 
@@ -28,7 +28,7 @@ def signup(request):
 @api_view(["GET"])
 def profile(request, personname):
     person = get_object_or_404(User, username=personname)
-    serializer = UserSerializer(person)
+    serializer = UserProfileSerializer(person)
     return Response(serializer.data)
 
 @api_view(["POST"])

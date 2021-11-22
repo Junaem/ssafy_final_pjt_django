@@ -22,6 +22,7 @@ class Movie(models.Model):
     # director = models.CharField(max_length=50)
     adult = models.BooleanField(default=False)
     tmdb_vote_average = models.FloatField()
+    tmdb_vote_count = models.IntegerField(default=0)
     popularity = models.FloatField()
     release_date = models.DateField()
     poster_path = models.CharField(max_length=100)
