@@ -5,14 +5,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-import movies
 
 from .models import Movie, Vote_rate, Genre
-from .serializers import MovieSerializer, Vote_rateSerializer, GenreSerializer
+from community.models import Review, Comment
+from community.serializers import ReviewSerializer, CommentSerializer
+from .serializers import MovieSerializer, MovieSimpleSerializer, Vote_rateSerializer, GenreSerializer
 import requests
+from django.db.models import Q
 
-from community.models import Review
-from community.serializers import ReviewSerializer
 from django.contrib.auth import get_user_model
 
 from server.settings import BASE_DIR
@@ -88,6 +88,14 @@ def index(request):
     #     if serializer.is_valid(raise_exception=True):
     #         serializer.save()
     #         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def movie_all(request):
+    movies = Movie.objects.all()
+    ser = MovieSimpleSerializer(movies, many=True)
+    return Response(ser.data)
+
     
 @api_view(['GET'])
 def detail(request, movie_pk):
@@ -221,3 +229,19 @@ def watched(request):
         watched_data.append(MovieSerializer(movie).data)
 
     return Response(watched_data)
+
+
+@api_view(['GET'])
+def search(request):
+    print(request)
+    res_json = {}
+    movie_result = Movie.objects.filter(Q(title__contains=text) | Q(overview__contains=text))
+    res_json["movie_results"] = MovieSimpleSerializer(movie_result, many=True).data
+    
+    review_result = Review.objects.filter(Q(title__contains=text) | Q(content__contains=text))
+    res_json["review_results"] = ReviewSerializer(review_result, many=True).data
+
+    comment_result = Comment.objects.filter(content__contains=text)
+    res_json["comment_results"] = CommentSerializer(comment_result, many=True).data
+    
+    return Response(res_json)

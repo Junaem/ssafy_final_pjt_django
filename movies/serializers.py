@@ -49,6 +49,7 @@ class MovieSerializer(serializers.ModelSerializer):
             "popularity",
             "release_date",
             "poster_path",
+            "backdrop_path",
             "runtime",
 
             "tmdb_vote_average",
@@ -71,6 +72,7 @@ class MovieSimpleSerializer(MovieSerializer):
             'title',
             'release_date',
             'poster_path',
+            'backdrop_path',
             'tmdb_vote_average',
 
             'our_rate',
