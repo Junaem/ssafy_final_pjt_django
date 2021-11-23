@@ -175,7 +175,27 @@ def recommend_a(request):
         return Response(preference)
     return Response({28:0, 35:0, 53:0, 16:0, 10749:0, "rank":[35, 53, 16, 10749, 28]})
 
+api_view(['GET'])
+def recommend_power(request):
+    votes = Vote_rate.objects.filter(user_id=request.user.id)
+    if votes.exists():
+        preference = {}
+        for vote in votes:
+            movie_id = vote.movie_id
+            rate = vote.rate
+            movies_genres = Genre.objects.filter(movie=movie_id)
+            for genre in movies_genres:
+                genre_id = genre.id
+                if preference.get(genre_id):
+                    preference[genre_id] += rate
+                else :
+                    preference[genre_id] = rate
+        rank = sorted(preference, key= lambda x: -preference[x])
+        # 개발중
+
+
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def classic(request):
     movies = Movie.objects.order_by('-tmdb_vote_average')
     serializer = MovieSerializer(movies, many=True)
@@ -183,6 +203,7 @@ def classic(request):
     
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def new_movies(request):
     movies = Movie.objects.order_by('-release_date')
     serializer = MovieSerializer(movies, many=True)

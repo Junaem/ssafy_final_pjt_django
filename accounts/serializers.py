@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username', 
             'password', 
-            'is_superuser'
+            'is_superuser',
             'like_movies', 
             'like_reviews',
             'followings',
