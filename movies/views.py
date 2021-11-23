@@ -156,6 +156,7 @@ def genre(request, genre_id):
     return Response(serializer.data[:20])
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def recommend_a(request):
     votes = Vote_rate.objects.filter(user_id=request.user.id)
     if votes.exists():
