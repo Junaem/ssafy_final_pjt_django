@@ -124,7 +124,7 @@ def detail(request, movie_pk):
 @api_view(['GET'])
 def get_movie_like(request, movie_id):
     if not Vote_rate.objects.filter(user_id=request.user.id, movie_id=movie_id).exists():       # 평점이 없을때 응답
-        return Response({}, status.HTTP_204_NO_CONTENT)
+        return Response({"rate":0}, status.HTTP_204_NO_CONTENT)
     vote_rate = get_object_or_404(Vote_rate, user_id=request.user.id, movie_id=movie_id)
     serializer = Vote_rateSerializer(vote_rate)
     return Response(serializer.data)
