@@ -26,6 +26,7 @@ class Movie(models.Model):
     popularity = models.FloatField()
     release_date = models.DateField()
     poster_path = models.CharField(max_length=100)
+    backdrop_path = models.CharField(max_length=100, default='')
     runtime = models.IntegerField(null=True)
     genre = models.ManyToManyField(Genre, related_name='movie')
 
