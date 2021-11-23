@@ -158,22 +158,23 @@ def genre(request, genre_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recommend_a(request):
-    votes = Vote_rate.objects.filter(user_id=request.user.id)
-    if votes.exists():
-        preference = {}
-        for vote in votes:
-            movie_id = vote.movie_id
-            rate = vote.rate
-            movies_genres = Genre.objects.filter(movie=movie_id)
-            for genre in movies_genres:
-                genre_id = genre.id
-                if preference.get(genre_id):
-                    preference[genre_id] += rate
-                else :
-                    preference[genre_id] = rate
-        rank = sorted(preference, key= lambda x: -preference[x])
-        preference["rank"] = rank
-        return Response(preference)
+    if request.user!='AnonymousUser':
+        votes = Vote_rate.objects.filter(user_id=request.user.id)
+        if votes.exists():
+            preference = {}
+            for vote in votes:
+                movie_id = vote.movie_id
+                rate = vote.rate
+                movies_genres = Genre.objects.filter(movie=movie_id)
+                for genre in movies_genres:
+                    genre_id = genre.id
+                    if preference.get(genre_id):
+                        preference[genre_id] += rate
+                    else :
+                        preference[genre_id] = rate
+            rank = sorted(preference, key= lambda x: -preference[x])
+            preference["rank"] = rank
+            return Response(preference)
     return Response({28:0, 35:0, 53:0, 16:0, 10749:0, "rank":[35, 53, 16, 10749, 28]})
 
 api_view(['GET'])
