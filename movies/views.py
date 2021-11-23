@@ -195,6 +195,7 @@ def recommend_power(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def classic(request):
     movies = Movie.objects.order_by('-tmdb_vote_average')
     serializer = MovieSerializer(movies, many=True)
@@ -202,6 +203,7 @@ def classic(request):
     
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def new_movies(request):
     movies = Movie.objects.order_by('-release_date')
     serializer = MovieSerializer(movies, many=True)
