@@ -12,6 +12,7 @@ from community.serializers import ReviewSerializer, CommentSerializer
 from .serializers import MovieSerializer, MovieSimpleSerializer, Vote_rateSerializer, GenreSerializer
 import requests
 from django.db.models import Q
+from urllib import parse as url_parse
 
 from django.contrib.auth import get_user_model
 
@@ -232,8 +233,7 @@ def watched(request):
 
 
 @api_view(['GET'])
-def search(request):
-    print(request)
+def search(request, text):
     res_json = {}
     movie_result = Movie.objects.filter(Q(title__contains=text) | Q(overview__contains=text))
     res_json["movie_results"] = MovieSimpleSerializer(movie_result, many=True).data
