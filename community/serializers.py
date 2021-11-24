@@ -26,6 +26,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         serializer = CommentSerializer(comments, many=True)
         return serializer.data
 
+    backdrop_path = serializers.SerializerMethodField()
+    def get_backdrop_path(self, obj):
+        movie = Movie.objects.get(id=obj.movie_id)
+        return movie.backdrop_path
+
     class Meta:
         model = Review
         fields = (
@@ -42,7 +47,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 
                     "movie_title",
                     "username",
-                    "comments_data"
+                    "comments_data",
+                    "backdrop_path"
                 )
         read_only_fields = ('id', 'user', 'like_users', 'comment_set', 'created_at', 'updated_at')
 
