@@ -59,6 +59,11 @@ class CommentSerializer(serializers.ModelSerializer):
         user_id = obj.user_id
         return User.objects.get(id=user_id).username
 
+    review_title = serializers.SerializerMethodField()
+    def get_review_title(self, obj):
+        review = Review.objects.get(id=obj.review_id)
+        return review.title
+
     class Meta:
         model = Comment
         fields = (
@@ -69,7 +74,8 @@ class CommentSerializer(serializers.ModelSerializer):
                     "review",
                     "created_at",
                     "updated_at",
-
+                    
+                    "review_title",
                     "username"
                )
         read_only_fields = ('id', 'user', 'review', 'created_at', 'updated_at')
