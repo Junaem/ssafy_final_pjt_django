@@ -51,7 +51,7 @@ def review_detail(request, review_pk):
         serializer = ReviewSerializer(review)
 
         # 직접 json에 추가하던 코드, seriailzerMethodField로 대체했으나 일단 주석으로 남겨둠
-        # comment_list = []                                        # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
+        # comment_list = []         # serizlizer를 뜯어서 코멘트 json들을 담은 리스트를 추가한 다음 한 번에 Response로 보낼거임
         # for comment_id in review_json["comment_set"]:
         #     comment=get_object_or_404(Comment, id=comment_id)
         #     com_ser = CommentSerializer(comment)
