@@ -77,8 +77,8 @@ def index(request):
                     serializer.save()
 
         req_genre()
-        req_and_save("popular", 3)
-        req_and_save("top_rated", 5)
+        req_and_save("popular", 4)
+        req_and_save("top_rated", 6)
         req_and_save("upcoming", 1)
         movies = Movie.objects.order_by("-popularity")                      # DB에 저장된 모든 영화들 popularity 내림차순으로 반환
         list_serializer = MovieSerializer(movies, many=True)
@@ -160,7 +160,13 @@ def post_movie_like(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def genre(request, genre_id):
-    movies = Movie.objects.filter(genre=genre_id).order_by('-popularity')
+    movies = Movie.objects.filter(genre=genre_id)
+    if request.user != 'AnonymousUser':
+        votes = Vote_rate.objects.filter(user_id=request.user.id)
+        watched_movies = []
+        for vote in votes:
+            watched_movies.append(vote.movie_id)
+        movies = movies.exclude(id__in=watched_movies).order_by('-popularity')
     serializer = MovieSerializer(movies, many=True)
     return Response(serializer.data[:20])
 
